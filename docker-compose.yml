@@ -13,12 +13,18 @@ services:
       REDIS_PORT: 6379
     ports:
       - 8080:8080
-    # command: 
-    #   - echo '{"username":"jdoe","firstname":"John", "lastname": "doe"}' | eg user create --stdin
-    # docker container exec -it gateway eg user create -p 'username=jdoe' -p 'firstname=John' -p 'lastname=Doe'
 
   redisdb:
     image: "redis:5-alpine"
     container_name: redis
+
+  phpredisadmin:
+    image: erikdubbelboer/phpredisadmin
+    container_name: phpredisadmin
+    depends_on: 
+      - redisdb
+    environment:
+      REDIS_1_HOST: redisdb
+      REDIS_1_NAME: redis-gateway
     ports:
-      - 6379:6379  
+      - 8081:80
