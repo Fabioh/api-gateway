@@ -1,0 +1,24 @@
+version: '3.4'
+
+services:
+  my-gateway:
+    image: my-gateway
+    build: .
+    container_name: gateway
+    depends_on: 
+      - redisdb
+    environment:
+      NODE_ENV: production
+      REDIS_HOST: redisdb
+      REDIS_PORT: 6379
+    ports:
+      - 8080:8080
+    # command: 
+    #   - echo '{"username":"jdoe","firstname":"John", "lastname": "doe"}' | eg user create --stdin
+    # docker container exec -it gateway eg user create -p 'username=jdoe' -p 'firstname=John' -p 'lastname=Doe'
+
+  redisdb:
+    image: "redis:5-alpine"
+    container_name: redis
+    ports:
+      - 6379:6379  
