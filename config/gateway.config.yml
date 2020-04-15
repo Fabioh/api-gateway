@@ -1,15 +1,24 @@
 http:
-  port: 8080
+  # port: 8080
+  port: ${GATEWAY_PORT:-8080}
 admin:
   port: 9876
   host: localhost
 apiEndpoints:
   api:
     host: localhost
-    paths: '/ip'
+    paths: 
+      - '/ip'
+      - '/anl/synoptic/locale/:country?token=your-app-token'
+    methods: ["GET", "OPTIONS"]
+  climatempo:
+    host: localhost
+    path: ''
 serviceEndpoints:
   httpbin:
     url: 'https://httpbin.org'
+  apiadvisor:
+    url: 'http://apiadvisor.climatempo.com.br/api/v1'
 policies:
   - basic-auth
   - cors
@@ -20,13 +29,23 @@ policies:
   - proxy
   - rate-limit
 pipelines:
+  climatempo:
+    apiEndpoints:
+      - climatempo
+    policies:
+      - proxy:
+        - action:
+            serviceEndpoint: apiadvisor
+            changeOrigin: true
+            prependPath: true
+            # cookieDomainRewrite: "localhost"
   default:
     apiEndpoints:
       - api
     policies:
     # Uncomment `key-auth:` when instructed to in the Getting Started guide.
-    - key-auth:
-    - proxy:
+      - key-auth:
+      - proxy:
         - action:
             serviceEndpoint: httpbin 
             changeOrigin: true
